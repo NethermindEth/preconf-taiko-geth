@@ -23,6 +23,7 @@ func TaikoGenesisBlock(networkID uint64) *Genesis {
 	switch networkID {
 	case params.TaikoMainnetNetworkID.Uint64():
 		log.Info("Using Nethermind genesis file for Mainnet network", "networkID", params.TaikoMainnetNetworkID.Uint64())
+		log.Info("Geth version", "version", params.VersionWithMeta)
 		chainConfig.ChainID = params.TaikoMainnetNetworkID
 		chainConfig.OntakeBlock = new(big.Int).SetUint64(0)
 		// TODO: temporary using neth genesis for mainnet chain id
