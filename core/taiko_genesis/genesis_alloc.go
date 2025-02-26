@@ -36,3 +36,6 @@ var MainnetGenesisAllocJSON []byte
 
 //go:embed neth.json
 var NethGenesisAllocJSON []byte
+
+//go:embed preconf_devnet.json
+var PreconfDevnetGenesisAllocJSON []byte

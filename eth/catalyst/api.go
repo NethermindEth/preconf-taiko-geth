@@ -32,6 +32,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/stateless"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/internal/version"
@@ -460,6 +461,8 @@ func (api *ConsensusAPI) forkchoiceUpdated(update engine.ForkchoiceStateV1, payl
 				return valid(nil), engine.InvalidPayloadAttributes.With(err)
 			}
 
+			// Use the tx list hash as the beacon root.
+			txListHash := crypto.Keccak256Hash(payloadAttributes.BlockMetadata.TxList[:])
 			// Cache the mined block for later use.
 			args := &miner.BuildPayloadArgs{
 				Parent:       block.ParentHash(),
@@ -468,8 +471,14 @@ func (api *ConsensusAPI) forkchoiceUpdated(update engine.ForkchoiceStateV1, payl
 				Random:       block.MixDigest(),
 				Withdrawals:  block.Withdrawals(),
 				Version:      payloadVersion,
+				TxListHash:   &txListHash,
 			}
 			id := args.Id()
+			// If we already are busy generating this work, then we do not need
+			// to start a second process.
+			if api.localBlocks.has(id) {
+				return valid(&id), nil
+			}
 			payload, err := api.eth.Miner().BuildPayload(args, false)
 			if err != nil {
 				log.Error("Failed to build payload", "err", err)
@@ -488,8 +497,11 @@ func (api *ConsensusAPI) forkchoiceUpdated(update engine.ForkchoiceStateV1, payl
 
 			// Write L1Origin.
 			rawdb.WriteL1Origin(api.eth.ChainDb(), l1Origin.BlockID, l1Origin)
-			// Write the head L1Origin.
-			rawdb.WriteHeadL1Origin(api.eth.ChainDb(), l1Origin.BlockID)
+
+			// Write the head L1Origin, only when it's not a preconfirmation block.
+			if !l1Origin.IsPreconfBlock() {
+				rawdb.WriteHeadL1Origin(api.eth.ChainDb(), l1Origin.BlockID)
+			}
 
 			return valid(&id), nil
 		}
