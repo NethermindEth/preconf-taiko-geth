@@ -28,21 +28,22 @@ func TaikoGenesisBlock(networkID uint64) *Genesis {
 	var allocJSON []byte
 	switch networkID {
 	case params.TaikoMainnetNetworkID.Uint64():
-		log.Info("Using Nethermind genesis file for Mainnet network", "networkID", params.TaikoMainnetNetworkID.Uint64())
-		log.Info("Geth version", "version", params.VersionWithMeta)
 		chainConfig.ChainID = params.TaikoMainnetNetworkID
+		chainConfig.OntakeBlock = MainnetOntakeBlock
+		chainConfig.PacayaBlock = MainnetPacayaBlock
+		allocJSON = taikoGenesis.MainnetGenesisAllocJSON
+	case params.TaikoInternalL2ANetworkID.Uint64():
+		log.Info("Using Nethermind genesis file for TaikoInternalL2A network", "networkID", params.TaikoInternalL2ANetworkID.Uint64())
+		log.Info("Geth version", "version", params.VersionWithMeta)
+		chainConfig.ChainID = params.TaikoInternalL2ANetworkID
 		chainConfig.OntakeBlock = new(big.Int).SetUint64(0)
 		chainConfig.PacayaBlock = new(big.Int).SetUint64(0)
-		// TODO: temporary using neth genesis for mainnet chain id
-		// chainConfig.OntakeBlock = MainnetOntakeBlock
-		// chainConfig.PacayaBlock = MainnetPacayaBlock
-		// allocJSON = taikoGenesis.MainnetGenesisAllocJSON
 		allocJSON = taikoGenesis.NethGenesisAllocJSON
-	case params.TaikoInternalL2ANetworkID.Uint64():
-		chainConfig.ChainID = params.TaikoInternalL2ANetworkID
-		chainConfig.OntakeBlock = InternalDevnetOntakeBlock
-		chainConfig.PacayaBlock = InternalDevnetPacayaBlock
-		allocJSON = taikoGenesis.InternalL2AGenesisAllocJSON
+		// TODO: temporary using neth genesis for mainnet chain id
+		// chainConfig.ChainID = params.TaikoInternalL2ANetworkID
+		// chainConfig.OntakeBlock = InternalDevnetOntakeBlock
+		// chainConfig.PacayaBlock = InternalDevnetPacayaBlock
+		// allocJSON = taikoGenesis.InternalL2AGenesisAllocJSON
 	case params.TaikoInternalL2BNetworkID.Uint64():
 		chainConfig.ChainID = params.TaikoInternalL2BNetworkID
 		allocJSON = taikoGenesis.InternalL2BGenesisAllocJSON
