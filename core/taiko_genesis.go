@@ -34,7 +34,6 @@ func TaikoGenesisBlock(networkID uint64) *Genesis {
 		allocJSON = taikoGenesis.MainnetGenesisAllocJSON
 	case params.TaikoInternalL2ANetworkID.Uint64():
 		log.Info("Using Nethermind genesis file for TaikoInternalL2A network", "networkID", params.TaikoInternalL2ANetworkID.Uint64())
-		log.Info("Geth version", "version", params.VersionWithMeta)
 		chainConfig.ChainID = params.TaikoInternalL2ANetworkID
 		chainConfig.OntakeBlock = new(big.Int).SetUint64(0)
 		chainConfig.PacayaBlock = new(big.Int).SetUint64(0)
