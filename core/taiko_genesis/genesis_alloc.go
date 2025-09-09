@@ -39,3 +39,6 @@ var NethGenesisAllocJSON []byte
 
 //go:embed preconf_devnet.json
 var PreconfDevnetGenesisAllocJSON []byte
+
+//go:embed masaya.json
+var MasayaGenesisAllocJSON []byte
