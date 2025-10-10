@@ -36,11 +36,17 @@ func TaikoGenesisBlock(networkID uint64) *Genesis {
 	var allocJSON []byte
 	switch networkID {
 	case params.TaikoMainnetNetworkID.Uint64():
+		log.Info("Using Nethermind genesis file for Mainnet network", "networkID", params.TaikoMainnetNetworkID.Uint64())
 		chainConfig.ChainID = params.TaikoMainnetNetworkID
-		chainConfig.OntakeBlock = MainnetOntakeBlock
-		chainConfig.PacayaBlock = MainnetPacayaBlock
-		chainConfig.ShastaBlock = MainnetShastaBlock
-		allocJSON = taikoGenesis.MainnetGenesisAllocJSON
+		// TODO: temporary using neth genesis for mainnet chain id
+		// chainConfig.OntakeBlock = MainnetOntakeBlock
+		// chainConfig.PacayaBlock = MainnetPacayaBlock
+		// chainConfig.ShastaBlock = MainnetShastaBlock
+		// allocJSON = taikoGenesis.MainnetGenesisAllocJSON
+		chainConfig.OntakeBlock = new(big.Int).SetUint64(0)
+		chainConfig.PacayaBlock = new(big.Int).SetUint64(0)
+		chainConfig.ShastaBlock = new(big.Int).SetUint64(0)
+		allocJSON = taikoGenesis.NethGenesisAllocJSON
 	case params.TaikoInternalNetworkID.Uint64():
 		chainConfig.ChainID = params.TaikoInternalNetworkID
 		chainConfig.OntakeBlock = InternalDevnetOntakeBlock
